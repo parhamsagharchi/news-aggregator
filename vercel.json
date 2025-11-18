@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/newsapi",
+      "destination": "https://newsapi.org/v2/everything"
+    },
+    {
+      "source": "/guardian",
+      "destination": "https://content.guardianapis.com/search"
+    },
+    {
+      "source": "/nyt",
+      "destination": "https://api.nytimes.com/svc/search/v2/articlesearch.json"
+    }
+  ],
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "dist",
+  "framework": "vite"
+}
+
