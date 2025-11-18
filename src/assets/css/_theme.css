@@ -1,0 +1,28 @@
+.echo.background {
+  &::before {
+    pointer-events: none;
+  }
+
+  &.background--hidden {
+    &::before {
+      opacity: 0 !important;
+      transform: translateY(-100%) !important;
+      pointer-events: none;
+    }
+  }
+}
+
+/* Top bar styles */
+.top-bar {
+  &--active {
+    .container {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+      background: linear-gradient(
+        to right,
+        rgb(var(--color-theme-1)),
+        rgb(var(--color-theme-2))
+      );
+    }
+  }
+}
