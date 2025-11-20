@@ -6,7 +6,6 @@ import type {
 } from "./store.types";
 import { ENewsSource } from "./store.enum";
 import { storeConfig } from "./store.constant";
-import { NEWS_CATEGORIES } from "@/constants/dropdown-options.constant";
 
 /**
  * useNewsConfigurationStore that manages the user's news configuration,
@@ -17,7 +16,7 @@ export const useNewsConfigurationStore = create<IUseNewsConfigurationStore>()(
     (set) => ({
       config: {
         sources: [ENewsSource.NewsAPI, ENewsSource.Guardian, ENewsSource.Nyt],
-        categories: [NEWS_CATEGORIES[0].value],
+        categories: [],
         authors: [],
       },
 

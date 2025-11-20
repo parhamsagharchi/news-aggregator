@@ -6,11 +6,11 @@ import { ENewsSource } from "@/store/store.enum";
 import {
   NEWS_CATEGORIES,
   SOURCE_OPTIONS,
-  POPULAR_AUTHORS,
 } from "@/constants/dropdown-options.constant";
 import { parseDateRange, formatDateRange } from "@/utils/date-range";
 import { useDebounceCallback } from "usehooks-ts";
 import { useAdvanceFilterStore } from "@/store/store.hooks";
+import { useAuthorsFromCache } from "@/hooks/use-authors-from-cache";
 import type {
   IInputChangeEvent,
   IMultiSelectChangeEvent,
@@ -27,6 +27,10 @@ function FilterBar() {
     setStartDate,
     setEndDate,
   } = useAdvanceFilterStore();
+
+  // Get authors from cache
+  const authorsFromCache = useAuthorsFromCache();
+  const hasAuthors = authorsFromCache && authorsFromCache.length > 0;
 
   // Local state for immediate UI update
   const [localKeyword, setLocalKeyword] = useState(filterState.keyword);
@@ -214,13 +218,25 @@ function FilterBar() {
               <MultiSelect
                 value={filterState.author}
                 onChange={handleFieldChange("SET_AUTHORS")}
-                className="pl-10 pr-8 py-2.5 w-full h-10"
+                disabled={!hasAuthors}
+                className="pl-10 pr-8 py-2.5 w-full h-10 disabled:opacity-50 disabled:cursor-not-allowed"
+                title={
+                  !hasAuthors
+                    ? "No authors available. Load articles first to see available authors."
+                    : undefined
+                }
               >
-                {POPULAR_AUTHORS.map((author) => (
-                  <option key={author.value} value={author.value}>
-                    {author.label}
+                {hasAuthors ? (
+                  authorsFromCache.map((author) => (
+                    <option key={author.value} value={author.value}>
+                      {author.label}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No authors available
                   </option>
-                ))}
+                )}
               </MultiSelect>
             </div>
           </div>
