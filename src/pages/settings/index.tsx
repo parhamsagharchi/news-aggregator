@@ -22,6 +22,7 @@ import { settingsFormReducer } from "./settings.reducer";
 import type { TSettingsFormAction } from "./settings.types";
 import { queryClient } from "@/http-core/api/api.query";
 import { useAuthorsFromCache } from "@/hooks/use-authors-from-cache";
+import { ESettingsFormAction } from "./settings.enum";
 
 function Settings() {
   const formId = useId();
@@ -42,7 +43,7 @@ function Settings() {
   // Sync form state when config changes
   useEffect(() => {
     dispatch({
-      type: "RESET",
+      type: ESettingsFormAction.RESET,
       payload: {
         sources: config?.sources ?? [],
         categories: config?.categories ?? [],
@@ -84,7 +85,12 @@ function Settings() {
   };
 
   const handleFieldChange =
-    (actionType: "SET_SOURCES" | "SET_CATEGORIES" | "SET_AUTHORS") =>
+    (
+      actionType:
+        | ESettingsFormAction.SET_SOURCES
+        | ESettingsFormAction.SET_CATEGORIES
+        | ESettingsFormAction.SET_AUTHORS
+    ) =>
     (
       e: ChangeEvent<HTMLSelectElement> & {
         target: { value: string[] };
@@ -153,7 +159,9 @@ function Settings() {
                 <div className="flex-1 w-full mt-3 xl:mt-0">
                   <MultiSelect
                     value={formState.sources}
-                    onChange={handleFieldChange("SET_SOURCES")}
+                    onChange={handleFieldChange(
+                      ESettingsFormAction.SET_SOURCES
+                    )}
                   >
                     {SOURCE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -183,7 +191,9 @@ function Settings() {
                 <div className="flex-1 w-full mt-3 xl:mt-0">
                   <MultiSelect
                     value={formState.categories}
-                    onChange={handleFieldChange("SET_CATEGORIES")}
+                    onChange={handleFieldChange(
+                      ESettingsFormAction.SET_CATEGORIES
+                    )}
                   >
                     {NEWS_CATEGORIES.map((category) => (
                       <option key={category.value} value={category.value}>
@@ -213,7 +223,9 @@ function Settings() {
                 <div className="flex-1 w-full mt-3 xl:mt-0">
                   <MultiSelect
                     value={formState.authors}
-                    onChange={handleFieldChange("SET_AUTHORS")}
+                    onChange={handleFieldChange(
+                      ESettingsFormAction.SET_AUTHORS
+                    )}
                     disabled={!hasAuthors}
                     className="disabled:opacity-50 disabled:cursor-not-allowed"
                     title={

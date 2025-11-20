@@ -1,0 +1,6 @@
+export enum ESettingsFormAction {
+  SET_SOURCES = "SET_SOURCES",
+  SET_CATEGORIES = "SET_CATEGORIES",
+  SET_AUTHORS = "SET_AUTHORS",
+  RESET = "RESET",
+}
