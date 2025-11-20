@@ -99,7 +99,7 @@ function FilterBar() {
 
         {/* First Row: Search and Date Range */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          {/* Search Input - Takes 2 columns */}
+          {/* Search Input */}
           <div className="sm:col-span-2 flex flex-col">
             <Label className="mb-2 text-sm font-medium text-slate-700">
               Search
@@ -126,7 +126,7 @@ function FilterBar() {
             </div>
           </div>
 
-          {/* Date Range Picker - Takes 1 column */}
+          {/* Date Range Picker */}
           <div className="flex flex-col">
             <Label className="mb-2 text-sm font-medium text-slate-700">
               Date Range
@@ -160,9 +160,9 @@ function FilterBar() {
           </div>
         </div>
 
-        {/* Second Row: Category, Source, Author - Equal sizes */}
+        {/* Second Row: Category, Source, Author  */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          {/* Category MultiSelect */}
+          {/* Category  */}
           <div className="flex flex-col">
             <Label className="mb-2 text-sm font-medium text-slate-700">
               Category
@@ -183,7 +183,7 @@ function FilterBar() {
             </div>
           </div>
 
-          {/* Source MultiSelect */}
+          {/* Source */}
           <div className="flex flex-col">
             <Label className="mb-2 text-sm font-medium text-slate-700">
               Source
@@ -204,7 +204,7 @@ function FilterBar() {
             </div>
           </div>
 
-          {/* Author MultiSelect */}
+          {/* Author  */}
           <div className="flex flex-col">
             <Label className="mb-2 text-sm font-medium text-slate-700">
               Author
