@@ -30,29 +30,27 @@ function Select(props: ISelectProps) {
     }
   };
 
-  const sizeClasses =
-    size === "sm"
-      ? "text-xs py-1.5 pl-3 pr-8 h-8"
-      : size === "lg"
-      ? "text-lg py-1.5 pl-4 pr-8 h-12"
-      : "py-2.5 px-3 pr-8 h-10";
 
   return (
     <Listbox value={value || ""} onChange={handleChange} disabled={disabled}>
       {({ open, disabled: isDisabled }) => (
         <div className="relative w-full">
           <Listbox.Button
-            className={clsx([
+            className={clsx(
               "relative w-full cursor-pointer rounded-md",
               "bg-slate-50 border border-slate-300 shadow-sm",
               "hover:bg-white hover:border-slate-400",
               "focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary focus:border-opacity-60",
               "transition duration-200 ease-in-out",
               "text-left text-sm",
-              isDisabled && "bg-slate-100 cursor-not-allowed opacity-60",
-              sizeClasses,
-              className,
-            ])}
+              {
+                "bg-slate-100 cursor-not-allowed opacity-60": isDisabled,
+                "text-xs py-1.5 pl-3 pr-8 h-8": size === "sm",
+                "text-lg py-1.5 pl-4 pr-8 h-12": size === "lg",
+                "py-2.5 px-3 pr-8 h-10": size !== "sm" && size !== "lg",
+              },
+              className
+            )}
           >
             <span className="block truncate text-slate-700">
               {selectedOption?.label || "Select..."}
@@ -61,7 +59,9 @@ function Select(props: ISelectProps) {
               <ChevronDown
                 className={clsx(
                   "h-5 w-5 text-slate-400 transition-transform duration-200",
-                  open && "transform rotate-180"
+                  {
+                    "transform rotate-180": open,
+                  }
                 )}
                 aria-hidden="true"
               />
@@ -81,7 +81,10 @@ function Select(props: ISelectProps) {
                   className={({ active }) =>
                     clsx(
                       "relative cursor-pointer select-none py-2 pl-10 pr-4",
-                      active ? "bg-primary/10 text-primary" : "text-slate-900"
+                      {
+                        "bg-primary/10 text-primary": active,
+                        "text-slate-900": !active,
+                      }
                     )
                   }
                   value={option.value}
@@ -91,7 +94,10 @@ function Select(props: ISelectProps) {
                       <span
                         className={clsx(
                           "block truncate",
-                          selected ? "font-medium" : "font-normal"
+                          {
+                            "font-medium": selected,
+                            "font-normal": !selected,
+                          }
                         )}
                       >
                         {option.label}
