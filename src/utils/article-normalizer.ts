@@ -10,42 +10,42 @@ import type { INytArticle } from "@/http-core/services/nyt/nyt.types";
 export const normalizeNewsApiArticle = (
   article: INewsApiArticle
 ): IArticle => ({
-  id: article.url || "",
-  title: article.title || "",
-  description: article.description || article.content || "",
-  url: article.url || "",
-  imageUrl: article.urlToImage || null,
-  publishedAt: article.publishedAt || "",
+  id: article?.url || "",
+  title: article?.title || "",
+  description: article?.description || article?.content || "",
+  url: article?.url || "",
+  imageUrl: article?.urlToImage || null,
+  publishedAt: article?.publishedAt || "",
   source: ENewsSource.NewsAPI,
+  author: article?.author || null,
 });
 
 /**
  * Normalize Guardian article to unified format
- * Guardian API doesn't reliably provide images, so we set imageUrl to null
  */
 export const normalizeGuardianArticle = (
   article: IGuardianArticle
 ): IArticle => ({
-  id: article.id || "",
-  title: article.webTitle || "",
-  description:
-    article.fields?.trailText || article.fields?.body?.substring(0, 200) || "",
-  url: article.webUrl || "",
+  id: article?.id || "",
+  title: article?.webTitle || "",
+  description: "",
+  url: article?.webUrl || "",
   imageUrl: null, // Guardian doesn't provide reliable images
-  publishedAt: article.webPublicationDate || "",
+  publishedAt: article?.webPublicationDate || "",
   source: ENewsSource.Guardian,
+  author: "",
 });
 
 /**
  * Normalize NYT article to unified format
- * NYT API doesn't reliably provide images, so we set imageUrl to null
  */
 export const normalizeNytArticle = (article: INytArticle): IArticle => ({
-  id: article._id,
-  title: article.headline?.main || "",
-  description: article.snippet || article.abstract || "",
-  url: article.web_url,
-  imageUrl: null, // NYT doesn't provide reliable images
-  publishedAt: article.pub_date,
+  id: article?._id,
+  title: article?.headline?.main || "",
+  description: article?.snippet || article?.abstract || "",
+  url: article?.web_url,
+  imageUrl: article?.multimedia?.default?.url || null,
+  publishedAt: article?.pub_date,
   source: ENewsSource.Nyt,
+  author: article?.byline?.original || null,
 });

@@ -9,60 +9,47 @@ export interface IGetNytPayload {
 
 export interface INytArticle {
   abstract: string;
-  web_url: string;
-  snippet: string;
-  lead_paragraph: string | null;
-  print_section: string | null;
-  print_page: string | null;
-  source: string;
-  multimedia: Array<{
-    url: string;
-    format: string;
-    height: number;
-    width: number;
-    type: string;
-    subtype: string;
-    caption: string;
-    copyright: string;
-  }>;
+  byline?: {
+    original?: string;
+  };
+  document_type: string;
   headline: {
     main: string;
-    kicker: string | null;
-    content_kicker: string | null;
-    print_headline: string | null;
-    name: string | null;
-    seo: string | null;
-    sub: string | null;
+    kicker?: string;
+    print_headline?: string;
   };
-  keywords: Array<{
+  _id: string;
+  keywords?: {
     name: string;
     value: string;
     rank: number;
-    major: string;
-  }>;
-  pub_date: string;
-  document_type: string;
-  news_desk: string | null;
-  section_name: string | null;
-  subsection_name: string | null;
-  byline: {
-    original: string | null;
-    person: Array<{
-      firstname: string | null;
-      middlename: string | null;
-      lastname: string | null;
-      qualifier: string | null;
-      title: string | null;
-      role: string;
-      organization: string;
-      rank: number;
-    }>;
-    organization: string | null;
+  }[];
+  multimedia?: {
+    caption?: string;
+    credit?: string;
+    default?: {
+      url: string;
+      height: number;
+      width: number;
+    };
+    thumbnail?: {
+      url: string;
+      height: number;
+      width: number;
+    };
   };
-  type_of_material: string;
-  _id: string;
-  word_count: number;
+  news_desk?: string;
+  print_page?: string;
+  print_section?: string;
+  pub_date: string; // ISO string
+  section_name?: string;
+  snippet?: string;
+  source?: string;
+  subsection_name?: string;
+  type_of_material?: string;
   uri: string;
+  web_url: string;
+  word_count?: number;
 }
 
 export interface IGetNytResponse {
@@ -77,4 +64,3 @@ export interface IGetNytResponse {
     };
   };
 }
-

@@ -1,4 +1,4 @@
-import { readData } from "@/http-core/api/api-base";
+import { fetchData } from "@/http-core/api/api.request";
 import { apiKeys } from "@/http-core/config";
 import { ENewsSource } from "@/store/store.enum";
 
@@ -9,7 +9,6 @@ import type {
 
 /**
  * Map camelCase properties to Guardian API's hyphenated parameter names
- * Follows KISS principle with simple mapping logic
  */
 const mapGuardianParams = (
   params: IGetGuardianPayload
@@ -38,12 +37,13 @@ const mapGuardianParams = (
 };
 
 export async function getGuardianArticle(
-  params: IGetGuardianPayload
+  params: IGetGuardianPayload,
+  signal?: AbortSignal
 ): Promise<IGetGuardianResponse> {
   const mappedParams = mapGuardianParams(params);
-  return await readData<IGetGuardianResponse>(
+  return await fetchData<IGetGuardianResponse>(
     "",
-    { params: mappedParams },
+    { params: mappedParams, signal },
     ENewsSource.Guardian
   );
 }

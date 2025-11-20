@@ -20,19 +20,9 @@ export interface IGuardianArticle {
   webTitle: string;
   webUrl: string;
   apiUrl: string;
-  fields?: {
-    headline?: string;
-    trailText?: string;
-    thumbnail?: string;
-    body?: string;
-  };
-  tags?: Array<{
-    id: string;
-    type: string;
-    webTitle: string;
-    webUrl: string;
-    apiUrl: string;
-  }>;
+  isHosted: boolean;
+  pillarId: string;
+  pillarName: string;
 }
 
 export interface IGetGuardianResponse {

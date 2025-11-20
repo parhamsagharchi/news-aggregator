@@ -19,22 +19,28 @@ export const getSourceName = (source: ENewsSource): string => {
 };
 
 /**
- * Get the Tailwind CSS color class for a news source
+ * Get the Tailwind CSS gradient class for a news source
+ * Uses theme colors that match the application palette
+ * Theme palette: theme-1 (#4c956c - green), theme-2 (#006466 - teal), primary, success (teal), info (cyan)
  * @param source - The news source enum value
- * @returns The background color class for the source chip
+ * @returns The gradient background class for the source chip and text
  */
-export const getSourceColor = (source: ENewsSource): string => {
+export const getSourceGradient = (source: ENewsSource): string => {
   switch (source) {
     case ENewsSource.NewsAPI:
-      return "bg-blue-500";
+      // Using info (cyan) gradient - matches theme info color
+      return "bg-gradient-to-r from-cyan-500 to-cyan-600";
     case ENewsSource.Guardian:
-      return "bg-green-500";
+      // Using primary theme gradient (theme-1 to theme-2) - beautiful green to teal, user's favorite
+      return "bg-gradient-to-r from-theme-1 to-theme-2";
     case ENewsSource.Nyt:
-      return "bg-red-500";
+      // Using teal gradient - complements the theme palette
+      return "bg-gradient-to-r from-teal-500 to-teal-600";
     default:
-      return "bg-blue-500";
+      return "bg-gradient-to-r from-theme-1 to-theme-2";
   }
 };
+
 
 /**
  * Format a date string to a human-readable format

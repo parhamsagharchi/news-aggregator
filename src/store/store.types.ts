@@ -21,6 +21,32 @@ export interface IUseNewsConfigurationStore {
 
 /*
    |--------------------------------------------------------------------------
+   | Advance Filter
+   |--------------------------------------------------------------------------
+   */
+export interface IAdvanceFilter {
+  keyword: string;
+  category: string[];
+  sources: ENewsSource[];
+  author: string[];
+  startDate: string;
+  endDate: string;
+}
+
+export interface IUseAdvanceFilterStore {
+  filterState: IAdvanceFilter;
+  setKeyword: (keyword: string) => void;
+  setCategories: (categories: string[]) => void;
+  setSources: (sources: ENewsSource[]) => void;
+  setAuthors: (authors: string[]) => void;
+  setStartDate: (date: string) => void;
+  setEndDate: (date: string) => void;
+  resetFilters: (initialState: IAdvanceFilter) => void;
+  initialize: (config: { categories: string[]; sources: ENewsSource[]; authors: string[] }) => void;
+}
+
+/*
+   |--------------------------------------------------------------------------
    | Config
    |--------------------------------------------------------------------------
    */

@@ -7,4 +7,5 @@ export interface INewsCard {
   url: string;
   imageUrl?: string | null;
   source: ENewsSource;
+  author?: string | null;
 }

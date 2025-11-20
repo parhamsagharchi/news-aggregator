@@ -11,5 +11,6 @@ export interface IArticle {
   imageUrl: string | null;
   publishedAt: string;
   source: ENewsSource;
+  author: string | null;
 }
 
