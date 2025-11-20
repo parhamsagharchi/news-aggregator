@@ -1,6 +1,6 @@
 import { fetchData } from "@/http-core/api/api.request";
-import { apiKeys } from "@/http-core/config";
-import { ENewsSource } from "@/store/store.enum";
+import { createAxiosClient } from "@/http-core/api/api.axios";
+import { apiKeys, baseURLs } from "@/http-core/config";
 
 import type { IGetNytPayload, IGetNytResponse } from "./nyt.types";
 
@@ -17,7 +17,7 @@ export async function getNytArticles(
       },
       signal,
     },
-    ENewsSource.Nyt
+    createAxiosClient(baseURLs.nytApi || "")
   );
 }
 

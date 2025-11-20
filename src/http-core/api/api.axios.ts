@@ -9,7 +9,7 @@ import { errorHandlers, handleNetworkError } from "./api.error";
  * @param baseURL - The base URL for the API
  * @returns Configured Axios instance
  */
-const createAxiosClient = (baseURL: string): AxiosInstance => {
+export const createAxiosClient = (baseURL: string): AxiosInstance => {
   const client = axios.create({
     baseURL,
     headers,
@@ -74,4 +74,3 @@ export const guardianClient = createAxiosClient(baseURLs.guardianApi || "");
  * Axios instance for New York Times API
  */
 export const nytClient = createAxiosClient(baseURLs.nytApi || "");
-

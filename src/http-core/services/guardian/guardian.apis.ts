@@ -1,6 +1,6 @@
 import { fetchData } from "@/http-core/api/api.request";
-import { apiKeys } from "@/http-core/config";
-import { ENewsSource } from "@/store/store.enum";
+import { createAxiosClient } from "@/http-core/api/api.axios";
+import { apiKeys, baseURLs } from "@/http-core/config";
 
 import type {
   IGetGuardianPayload,
@@ -44,6 +44,6 @@ export async function getGuardianArticle(
   return await fetchData<IGetGuardianResponse>(
     "",
     { params: mappedParams, signal },
-    ENewsSource.Guardian
+    createAxiosClient(baseURLs.guardianApi || "")
   );
 }
