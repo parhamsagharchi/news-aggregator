@@ -6,7 +6,6 @@ import type {
 } from "./store.types";
 import { ENewsSource } from "./store.enum";
 import { storeConfig } from "./store.constant";
-import { NEWS_CATEGORIES } from "@/constants/dropdown-options.constant";
 
 /**
  * useNewsConfigurationStore that manages the user's news configuration,
@@ -17,7 +16,7 @@ export const useNewsConfigurationStore = create<IUseNewsConfigurationStore>()(
     (set) => ({
       config: {
         sources: [ENewsSource.NewsAPI, ENewsSource.Guardian, ENewsSource.Nyt],
-        categories: [NEWS_CATEGORIES[0].value],
+        categories: [],
         authors: [],
       },
 
@@ -41,90 +40,87 @@ export const useNewsConfigurationStore = create<IUseNewsConfigurationStore>()(
  * Not persisted - resets on page reload.
  * Automatically initializes from config store.
  */
-export const useAdvanceFilterStore = create<IUseAdvanceFilterStore>(
-  (set, get) => {
-    // Get initial state from config store
-    const config = useNewsConfigurationStore.getState().config;
+export const useAdvanceFilterStore = create<IUseAdvanceFilterStore>((set) => {
+  const config = useNewsConfigurationStore.getState().config;
 
-    const getInitialState = (): IUseAdvanceFilterStore["filterState"] => {
-      return {
-        keyword: "",
-        category: config?.categories ?? [],
-        sources: config?.sources ?? [],
-        author: config?.authors ?? [],
-        startDate: "",
-        endDate: "",
-      };
-    };
-
+  const getInitialState = (): IUseAdvanceFilterStore["filterState"] => {
     return {
-      filterState: getInitialState(),
-
-      setKeyword: (keyword) =>
-        set((state) => ({
-          filterState: {
-            ...state.filterState,
-            keyword,
-          },
-        })),
-
-      setCategories: (categories) =>
-        set((state) => ({
-          filterState: {
-            ...state.filterState,
-            category: categories,
-          },
-        })),
-
-      setSources: (sources) =>
-        set((state) => ({
-          filterState: {
-            ...state.filterState,
-            sources,
-          },
-        })),
-
-      setAuthors: (authors) =>
-        set((state) => ({
-          filterState: {
-            ...state.filterState,
-            author: authors,
-          },
-        })),
-
-      setStartDate: (startDate) =>
-        set((state) => ({
-          filterState: {
-            ...state.filterState,
-            startDate,
-          },
-        })),
-
-      setEndDate: (endDate) =>
-        set((state) => ({
-          filterState: {
-            ...state.filterState,
-            endDate,
-          },
-        })),
-
-      resetFilters: (initialState) =>
-        set({
-          filterState: initialState,
-        }),
-
-      initialize: (config) =>
-        set((state) => ({
-          filterState: {
-            ...state.filterState, // Preserve keyword and date range
-            category: config.categories ?? [],
-            sources: config.sources ?? [],
-            author: config.authors ?? [],
-          },
-        })),
+      keyword: "",
+      category: config?.categories ?? [],
+      sources: config?.sources ?? [],
+      author: config?.authors ?? [],
+      startDate: "",
+      endDate: "",
     };
-  }
-);
+  };
+
+  return {
+    filterState: getInitialState(),
+
+    setKeyword: (keyword) =>
+      set((state) => ({
+        filterState: {
+          ...state.filterState,
+          keyword,
+        },
+      })),
+
+    setCategories: (categories) =>
+      set((state) => ({
+        filterState: {
+          ...state.filterState,
+          category: categories,
+        },
+      })),
+
+    setSources: (sources) =>
+      set((state) => ({
+        filterState: {
+          ...state.filterState,
+          sources,
+        },
+      })),
+
+    setAuthors: (authors) =>
+      set((state) => ({
+        filterState: {
+          ...state.filterState,
+          author: authors,
+        },
+      })),
+
+    setStartDate: (startDate) =>
+      set((state) => ({
+        filterState: {
+          ...state.filterState,
+          startDate,
+        },
+      })),
+
+    setEndDate: (endDate) =>
+      set((state) => ({
+        filterState: {
+          ...state.filterState,
+          endDate,
+        },
+      })),
+
+    resetFilters: (initialState) =>
+      set({
+        filterState: initialState,
+      }),
+
+    initialize: (config) =>
+      set((state) => ({
+        filterState: {
+          ...state.filterState,
+          category: config.categories ?? [],
+          sources: config.sources ?? [],
+          author: config.authors ?? [],
+        },
+      })),
+  };
+});
 
 // Subscribe to config changes and auto-initialize filter store when empty
 useNewsConfigurationStore.subscribe((state) => {

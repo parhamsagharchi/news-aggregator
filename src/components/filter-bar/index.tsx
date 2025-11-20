@@ -6,11 +6,11 @@ import { ENewsSource } from "@/store/store.enum";
 import {
   NEWS_CATEGORIES,
   SOURCE_OPTIONS,
-  POPULAR_AUTHORS,
 } from "@/constants/dropdown-options.constant";
 import { parseDateRange, formatDateRange } from "@/utils/date-range";
 import { useDebounceCallback } from "usehooks-ts";
 import { useAdvanceFilterStore } from "@/store/store.hooks";
+import { useAuthorsFromCache } from "@/hooks/use-authors-from-cache";
 import type {
   IInputChangeEvent,
   IMultiSelectChangeEvent,
@@ -27,6 +27,10 @@ function FilterBar() {
     setStartDate,
     setEndDate,
   } = useAdvanceFilterStore();
+
+  // Get authors from cache
+  const authorsFromCache = useAuthorsFromCache();
+  const hasAuthors = authorsFromCache && authorsFromCache.length > 0;
 
   // Local state for immediate UI update
   const [localKeyword, setLocalKeyword] = useState(filterState.keyword);
@@ -99,7 +103,7 @@ function FilterBar() {
 
         {/* First Row: Search and Date Range */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          {/* Search Input - Takes 2 columns */}
+          {/* Search Input */}
           <div className="sm:col-span-2 flex flex-col">
             <Label className="mb-2 text-sm font-medium text-slate-700">
               Search
@@ -126,7 +130,7 @@ function FilterBar() {
             </div>
           </div>
 
-          {/* Date Range Picker - Takes 1 column */}
+          {/* Date Range Picker */}
           <div className="flex flex-col">
             <Label className="mb-2 text-sm font-medium text-slate-700">
               Date Range
@@ -160,9 +164,9 @@ function FilterBar() {
           </div>
         </div>
 
-        {/* Second Row: Category, Source, Author - Equal sizes */}
+        {/* Second Row: Category, Source, Author  */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          {/* Category MultiSelect */}
+          {/* Category  */}
           <div className="flex flex-col">
             <Label className="mb-2 text-sm font-medium text-slate-700">
               Category
@@ -183,7 +187,7 @@ function FilterBar() {
             </div>
           </div>
 
-          {/* Source MultiSelect */}
+          {/* Source */}
           <div className="flex flex-col">
             <Label className="mb-2 text-sm font-medium text-slate-700">
               Source
@@ -204,7 +208,7 @@ function FilterBar() {
             </div>
           </div>
 
-          {/* Author MultiSelect */}
+          {/* Author  */}
           <div className="flex flex-col">
             <Label className="mb-2 text-sm font-medium text-slate-700">
               Author
@@ -214,13 +218,25 @@ function FilterBar() {
               <MultiSelect
                 value={filterState.author}
                 onChange={handleFieldChange("SET_AUTHORS")}
-                className="pl-10 pr-8 py-2.5 w-full h-10"
+                disabled={!hasAuthors}
+                className="pl-10 pr-8 py-2.5 w-full h-10 disabled:opacity-50 disabled:cursor-not-allowed"
+                title={
+                  !hasAuthors
+                    ? "No authors available. Load articles first to see available authors."
+                    : undefined
+                }
               >
-                {POPULAR_AUTHORS.map((author) => (
-                  <option key={author.value} value={author.value}>
-                    {author.label}
+                {hasAuthors ? (
+                  authorsFromCache.map((author) => (
+                    <option key={author.value} value={author.value}>
+                      {author.label}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No authors available
                   </option>
-                ))}
+                )}
               </MultiSelect>
             </div>
           </div>

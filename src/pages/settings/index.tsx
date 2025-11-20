@@ -10,20 +10,27 @@ import { Settings as SettingsIcon, Pocket } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button, MultiSelect, Label } from "@/components/ui";
 import { ENewsSource } from "@/store/store.enum";
-import { useNewsConfigurationStore, useAdvanceFilterStore } from "@/store/store.hooks";
+import {
+  useNewsConfigurationStore,
+  useAdvanceFilterStore,
+} from "@/store/store.hooks";
 import {
   NEWS_CATEGORIES,
-  POPULAR_AUTHORS,
   SOURCE_OPTIONS,
 } from "@/constants/dropdown-options.constant";
 import { settingsFormReducer } from "./settings.reducer";
 import type { TSettingsFormAction } from "./settings.types";
 import { queryClient } from "@/http-core/api/api.query";
+import { useAuthorsFromCache } from "@/hooks/use-authors-from-cache";
 
 function Settings() {
   const formId = useId();
   const navigate = useNavigate();
   const { config, setConfig } = useNewsConfigurationStore();
+
+  // Get authors from cache
+  const authorsFromCache = useAuthorsFromCache();
+  const hasAuthors = authorsFromCache && authorsFromCache.length > 0;
 
   // Initialize form state from config
   const [formState, dispatch] = useReducer(settingsFormReducer, {
@@ -207,12 +214,25 @@ function Settings() {
                   <MultiSelect
                     value={formState.authors}
                     onChange={handleFieldChange("SET_AUTHORS")}
+                    disabled={!hasAuthors}
+                    className="disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={
+                      !hasAuthors
+                        ? "No authors available. Load articles first to see available authors."
+                        : undefined
+                    }
                   >
-                    {POPULAR_AUTHORS.map((author) => (
-                      <option key={author.value} value={author.value}>
-                        {author.label}
+                    {hasAuthors ? (
+                      authorsFromCache.map((author) => (
+                        <option key={author.value} value={author.value}>
+                          {author.label}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No authors available
                       </option>
-                    ))}
+                    )}
                   </MultiSelect>
                 </div>
               </div>

@@ -40,11 +40,11 @@ export function filterArticlesByDateRange(
 
   return articles.filter((article) => {
     const articleDate = new Date(article.publishedAt);
-    
+
     if (startDate && articleDate < new Date(startDate)) {
       return false;
     }
-    
+
     if (endDate) {
       const endDateObj = new Date(endDate);
       endDateObj.setHours(23, 59, 59, 999); // Include entire end date
@@ -52,7 +52,7 @@ export function filterArticlesByDateRange(
         return false;
       }
     }
-    
+
     return true;
   });
 }
@@ -68,7 +68,7 @@ export function filterArticlesByAuthor(
   authors: string | string[]
 ): IArticle[] {
   const authorArray = Array.isArray(authors) ? authors : [authors];
-  
+
   if (authorArray.length === 0 || authorArray.every((a) => !a.trim())) {
     return articles;
   }
@@ -104,11 +104,11 @@ export function filterArticles(
   authors?: string | string[]
 ): IArticle[] {
   let filtered = articles;
-  
+
   if (keyword) {
     filtered = filterArticlesByKeyword(filtered, keyword);
   }
-  
+
   if (startDate || endDate) {
     filtered = filterArticlesByDateRange(filtered, startDate, endDate);
   }
@@ -119,7 +119,6 @@ export function filterArticles(
       filtered = filterArticlesByAuthor(filtered, authors);
     }
   }
-  
+
   return filtered;
 }
-
