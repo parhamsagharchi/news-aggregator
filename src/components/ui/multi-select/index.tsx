@@ -110,7 +110,7 @@ function MultiSelect(props: IMultiSelectProps) {
                   ))}
                   {remainingCount > 0 && (
                     <Popover className="relative flex-shrink-0">
-                      {({ open: isPopoverOpen }) => (
+                      {() => (
                         <>
                           <Popover.Button
                             as="span"
@@ -159,10 +159,16 @@ function MultiSelect(props: IMultiSelectProps) {
                                               removeValue(option.value, e);
                                             }}
                                             onKeyDown={(e) => {
-                                              if (e.key === "Enter" || e.key === " ") {
+                                              if (
+                                                e.key === "Enter" ||
+                                                e.key === " "
+                                              ) {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                removeValue(option.value, e as any);
+                                                removeValue(
+                                                  option.value,
+                                                  e as any
+                                                );
                                               }
                                             }}
                                             className="hover:bg-primary/20 rounded-full p-0.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
