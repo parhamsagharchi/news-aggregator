@@ -12,7 +12,7 @@ import type {
  */
 const mapGuardianParams = (
   params: IGetGuardianPayload
-): Record<string, any> => {
+): Record<string, string | number | undefined> => {
   const paramMap: Record<string, string> = {
     fromDate: "from-date",
     toDate: "to-date",
@@ -22,7 +22,7 @@ const mapGuardianParams = (
     showTags: "show-tags",
   };
 
-  const mapped: Record<string, any> = {
+  const mapped: Record<string, string | number | undefined> = {
     "api-key": apiKeys.guardian,
   };
 

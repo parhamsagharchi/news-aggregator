@@ -7,21 +7,14 @@ import type { ApiRequestOptions } from "./api.types";
  * @param url - The endpoint URL
  * @param options - Axios request configuration
  * @param client - Axios instance to use for the request (defaults to newsApiClient)
- * @param returnFullResponse - Whether to return the full response object or just data
- * @returns Promise resolving to the response data or full response
+ * @returns Promise resolving to the response data
  */
 export async function makeHttpRequest<T>(
   url: string,
   options?: AxiosRequestConfig,
-  client: AxiosInstance = newsApiClient,
-  returnFullResponse = false
+  client: AxiosInstance = newsApiClient
 ): Promise<T> {
   const response = await client(url, options);
-
-  if (returnFullResponse) {
-    return response as T;
-  }
-
   return response.data as T;
 }
 
@@ -45,5 +38,5 @@ export async function fetchData<T>(
     signal: options?.signal, // Add AbortSignal for request cancellation
   };
 
-  return await makeHttpRequest<T>(url, requestConfig, client, false);
+  return await makeHttpRequest<T>(url, requestConfig, client);
 }

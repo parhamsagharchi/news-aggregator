@@ -61,16 +61,6 @@ export const createAxiosClient = (baseURL: string): AxiosInstance => {
 };
 
 /**
- * Axios instance for NewsAPI
+ * Axios instance for NewsAPI (used as default in api.request.ts)
  */
 export const newsApiClient = createAxiosClient(baseURLs.newsApi || "");
-
-/**
- * Axios instance for The Guardian API
- */
-export const guardianClient = createAxiosClient(baseURLs.guardianApi || "");
-
-/**
- * Axios instance for New York Times API
- */
-export const nytClient = createAxiosClient(baseURLs.nytApi || "");
