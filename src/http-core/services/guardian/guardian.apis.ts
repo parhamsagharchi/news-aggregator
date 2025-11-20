@@ -1,6 +1,6 @@
 import { fetchData } from "@/http-core/api/api.request";
-import { apiKeys } from "@/http-core/config";
-import { ENewsSource } from "@/store/store.enum";
+import { createAxiosClient } from "@/http-core/api/api.axios";
+import { apiKeys, baseURLs } from "@/http-core/config";
 
 import type {
   IGetGuardianPayload,
@@ -12,7 +12,7 @@ import type {
  */
 const mapGuardianParams = (
   params: IGetGuardianPayload
-): Record<string, any> => {
+): Record<string, string | number | undefined> => {
   const paramMap: Record<string, string> = {
     fromDate: "from-date",
     toDate: "to-date",
@@ -22,7 +22,7 @@ const mapGuardianParams = (
     showTags: "show-tags",
   };
 
-  const mapped: Record<string, any> = {
+  const mapped: Record<string, string | number | undefined> = {
     "api-key": apiKeys.guardian,
   };
 
@@ -44,6 +44,6 @@ export async function getGuardianArticle(
   return await fetchData<IGetGuardianResponse>(
     "",
     { params: mappedParams, signal },
-    ENewsSource.Guardian
+    createAxiosClient(baseURLs.guardianApi || "")
   );
 }

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # Development service
+  dev:
+    build:
+      context: .
+      target: dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_NEWSAPI_API_ENDPOINT=${VITE_NEWSAPI_API_ENDPOINT:-https://newsapi.org/v2/everything}
+      - VITE_GUARDIAN_API_ENDPOINT=${VITE_GUARDIAN_API_ENDPOINT:-https://content.guardianapis.com/search}
+      - VITE_NYTIMES_API_ENDPOINT=${VITE_NYTIMES_API_ENDPOINT:-https://api.nytimes.com/svc/search/v2/articlesearch.json}
+    command: pnpm dev --host
+
+  # Production service
+  production:
+    build:
+      context: .
+      target: production
+    ports:
+      - "80:80"
+    restart: unless-stopped
+

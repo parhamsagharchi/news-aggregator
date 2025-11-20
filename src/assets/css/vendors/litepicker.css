@@ -151,7 +151,6 @@
 
       div > .month-item-name,
       div > .month-item-year {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgb(74, 85, 104)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
         background-size: 15px;
         background-position: center right 0.6rem;
         background-color: transparent;
@@ -174,35 +173,6 @@
         }
       }
     }
-  }
-
-  /* Hide duplicate chevron in input field - must be more specific */
-  input.litepicker-input,
-  input[data-litepicker],
-  input[class*="litepicker"],
-  .litepicker-input {
-    background-image: none !important;
-    background-position: unset !important;
-    padding-right: 0.75rem !important;
-  }
-  
-  /* Also hide any pseudo-elements that might add chevron */
-  input.litepicker-input::after,
-  input.litepicker-input::before,
-  input[data-litepicker]::after,
-  input[data-litepicker]::before,
-  input[class*="litepicker"]::after,
-  input[class*="litepicker"]::before,
-  .litepicker-input::after,
-  .litepicker-input::before {
-    display: none !important;
-    content: none !important;
-    background-image: none !important;
-  }
-  
-  /* Hide chevron in any input that has litepicker class or attribute */
-  input[class*="pl-10"] {
-    background-image: none !important;
   }
 
   .container__days {
@@ -246,4 +216,3 @@
     --litepicker-day-width: 35px;
   }
 }
-

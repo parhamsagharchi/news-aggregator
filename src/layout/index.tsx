@@ -26,9 +26,12 @@ export function Layout() {
   const containerClasses = clsx(
     layoutClasses?.base,
     layoutClasses?.overlay?.base,
-    topBarActive
-      ? [layoutClasses?.background?.scrolled, layoutClasses?.overlay?.hidden]
-      : [layoutClasses?.background?.default, layoutClasses?.overlay?.visible]
+    {
+      [layoutClasses?.background?.scrolled || ""]: topBarActive,
+      [layoutClasses?.overlay?.hidden || ""]: topBarActive,
+      [layoutClasses?.background?.default || ""]: !topBarActive,
+      [layoutClasses?.overlay?.visible || ""]: !topBarActive,
+    }
   );
 
   return (
@@ -36,10 +39,9 @@ export function Layout() {
       {/* Top bar - Responsive header */}
       <header className="fixed inset-x-0 top-0 z-50 mt-1 h-[65px] sm:h-[70px] px-2 sm:px-3.5">
         <div
-          className={clsx(
-            "top-bar group relative mx-2 sm:mx-5 h-full",
-            topBarActive && "top-bar--active"
-          )}
+          className={clsx("top-bar group relative mx-2 sm:mx-5 h-full", {
+            "top-bar--active": topBarActive,
+          })}
         >
           <div
             className={clsx(
@@ -47,7 +49,9 @@ export function Layout() {
               "bg-transparent border-transparent shadow-none",
               "transition-[padding,background-color,border-color] duration-300 ease-in-out",
               "px-3 sm:px-4 md:px-5",
-              topBarActive && "bg-gradient-to-r from-theme-1 to-theme-2"
+              {
+                "bg-gradient-to-r from-theme-1 to-theme-2": topBarActive,
+              }
             )}
           >
             {/* Logo/Brand - Responsive sizing */}
@@ -70,9 +74,12 @@ export function Layout() {
                   className={clsx(
                     "flex items-center gap-1.5 sm:gap-2 transition-all duration-200",
                     "px-2 sm:px-3",
-                    isActive("/")
-                      ? "bg-white/25 text-white border-white/40 shadow-md hover:bg-white/35 hover:shadow-lg"
-                      : "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/30"
+                    {
+                      "bg-white/25 text-white border-white/40 shadow-md hover:bg-white/35 hover:shadow-lg":
+                        isActive("/"),
+                      "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/30":
+                        !isActive("/"),
+                    }
                   )}
                 >
                   <Home className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
@@ -87,9 +94,12 @@ export function Layout() {
                   className={clsx(
                     "flex items-center gap-1.5 sm:gap-2 transition-all duration-200",
                     "px-2 sm:px-3",
-                    isActive("/settings")
-                      ? "bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white border-amber-400/50 shadow-md hover:from-amber-500 hover:to-orange-500 hover:shadow-lg"
-                      : "bg-gradient-to-r from-amber-500/70 to-orange-500/70 text-white border-amber-400/40 hover:from-amber-500/80 hover:to-orange-500/80 hover:border-amber-400/50 shadow-sm hover:shadow-md"
+                    {
+                      "bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white border-amber-400/50 shadow-md hover:from-amber-500 hover:to-orange-500 hover:shadow-lg":
+                        isActive("/settings"),
+                      "bg-gradient-to-r from-amber-500/70 to-orange-500/70 text-white border-amber-400/40 hover:from-amber-500/80 hover:to-orange-500/80 hover:border-amber-400/50 shadow-sm hover:shadow-md":
+                        !isActive("/settings"),
+                    }
                   )}
                 >
                   <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />

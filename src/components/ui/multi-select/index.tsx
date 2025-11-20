@@ -10,7 +10,7 @@ function MultiSelect(props: IMultiSelectProps) {
   // Extract options from children
   const options = useMemo(() => {
     if (!children) return [];
-    
+
     const childrenArray = Array.isArray(children) ? children : [children];
     return childrenArray
       .filter((child: any) => child && child.props)
@@ -21,8 +21,10 @@ function MultiSelect(props: IMultiSelectProps) {
   }, [children]);
 
   const selectedValues = Array.isArray(value) ? value : [];
-  const selectedOptions = options.filter((opt) => selectedValues.includes(opt.value));
-  
+  const selectedOptions = options.filter((opt) =>
+    selectedValues.includes(opt.value)
+  );
+
   // Limit displayed options to 1, show "+X more" for the rest
   // This prevents the input from expanding vertically
   const MAX_DISPLAYED = 1;
@@ -47,13 +49,6 @@ function MultiSelect(props: IMultiSelectProps) {
     } as React.ChangeEvent<HTMLSelectElement> & { target: { value: string[] } });
   };
 
-  const sizeClasses =
-    size === "sm"
-      ? "text-xs py-1.5 pl-3 pr-8 min-h-8"
-      : size === "lg"
-      ? "text-lg py-1.5 pl-4 pr-8 min-h-12"
-      : "py-2.5 px-3 pr-8 min-h-10";
-
   return (
     <Listbox
       value={selectedValues}
@@ -64,21 +59,27 @@ function MultiSelect(props: IMultiSelectProps) {
       {({ open, disabled: isDisabled }) => (
         <div className="relative w-full">
           <Listbox.Button
-            className={clsx([
+            className={clsx(
               "relative w-full cursor-pointer rounded-md",
               "bg-slate-50 border border-slate-300 shadow-sm",
               "hover:bg-white hover:border-slate-400",
               "focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary focus:border-opacity-60",
               "transition duration-200 ease-in-out",
               "text-left text-sm",
-              isDisabled && "bg-slate-100 cursor-not-allowed opacity-60",
-              sizeClasses,
-              className,
-            ])}
+              {
+                "bg-slate-100 cursor-not-allowed opacity-60": isDisabled,
+                "text-xs py-1.5 pl-3 pr-8 min-h-8": size === "sm",
+                "text-lg py-1.5 pl-4 pr-8 min-h-12": size === "lg",
+                "py-2.5 px-3 pr-8 min-h-10": size !== "sm" && size !== "lg",
+              },
+              className
+            )}
           >
             <div className="flex items-center gap-1.5 min-h-[1.5rem] overflow-hidden pr-8">
               {selectedOptions.length === 0 ? (
-                <span className="text-slate-400 text-sm">Select options...</span>
+                <span className="text-slate-400 text-sm">
+                  Select options...
+                </span>
               ) : (
                 <>
                   {displayedOptions.map((option) => (
@@ -86,26 +87,36 @@ function MultiSelect(props: IMultiSelectProps) {
                       key={option.value}
                       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-xs font-medium flex-shrink-0"
                     >
-                      <span className="truncate max-w-[80px]">{option.label}</span>
+                      <span className="truncate max-w-[80px]">
+                        {option.label}
+                      </span>
                       {!isDisabled && (
-                        <button
-                          type="button"
+                        <span
+                          role="button"
+                          tabIndex={0}
                           onClick={(e) => removeValue(option.value, e)}
-                          className="hover:bg-primary/20 rounded-full p-0.5 transition-colors flex-shrink-0"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              removeValue(option.value, e as any);
+                            }
+                          }}
+                          className="hover:bg-primary/20 rounded-full p-0.5 transition-colors flex-shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
                         >
                           <X className="h-3 w-3" />
-                        </button>
+                        </span>
                       )}
                     </span>
                   ))}
                   {remainingCount > 0 && (
                     <Popover className="relative flex-shrink-0">
-                      {() => (
+                      {({ open: isPopoverOpen }) => (
                         <>
                           <Popover.Button
+                            as="span"
                             className={clsx(
                               "inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-xs font-medium",
-                              "hover:bg-primary/20 transition-colors",
+                              "hover:bg-primary/20 transition-colors cursor-pointer",
                               "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
                             )}
                             onClick={(e) => {
@@ -140,16 +151,24 @@ function MultiSelect(props: IMultiSelectProps) {
                                           {option.label}
                                         </span>
                                         {!isDisabled && (
-                                          <button
-                                            type="button"
+                                          <span
+                                            role="button"
+                                            tabIndex={0}
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               removeValue(option.value, e);
                                             }}
-                                            className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                                            onKeyDown={(e) => {
+                                              if (e.key === "Enter" || e.key === " ") {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                removeValue(option.value, e as any);
+                                              }
+                                            }}
+                                            className="hover:bg-primary/20 rounded-full p-0.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
                                           >
                                             <X className="h-3 w-3" />
-                                          </button>
+                                          </span>
                                         )}
                                       </span>
                                     ))}
@@ -169,7 +188,9 @@ function MultiSelect(props: IMultiSelectProps) {
               <ChevronDown
                 className={clsx(
                   "h-5 w-5 text-slate-400 transition-transform duration-200",
-                  open && "transform rotate-180"
+                  {
+                    "transform rotate-180": open,
+                  }
                 )}
                 aria-hidden="true"
               />
@@ -191,7 +212,10 @@ function MultiSelect(props: IMultiSelectProps) {
                     className={({ active: isActive }) =>
                       clsx(
                         "relative cursor-pointer select-none py-2 pl-10 pr-4",
-                        isActive ? "bg-primary/10 text-primary" : "text-slate-900"
+                        {
+                          "bg-primary/10 text-primary": isActive,
+                          "text-slate-900": !isActive,
+                        }
                       )
                     }
                     value={option.value}
@@ -199,10 +223,10 @@ function MultiSelect(props: IMultiSelectProps) {
                     {() => (
                       <>
                         <span
-                          className={clsx(
-                            "block truncate",
-                            isSelected ? "font-medium" : "font-normal"
-                          )}
+                          className={clsx("block truncate", {
+                            "font-medium": isSelected,
+                            "font-normal": !isSelected,
+                          })}
                         >
                           {option.label}
                         </span>
@@ -225,4 +249,3 @@ function MultiSelect(props: IMultiSelectProps) {
 }
 
 export default MultiSelect;
-
