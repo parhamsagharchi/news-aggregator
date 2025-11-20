@@ -8,6 +8,7 @@ export interface IGetNewsApiPayload {
   sortBy?: string;
   pageSize?: number;
   page?: number;
+  category?: string;
 }
 
 export interface INewsApiArticle {

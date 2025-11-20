@@ -1,15 +1,14 @@
+import { Spinner } from "@/components/spinner";
+import { Layout } from "@/layout";
 import { Suspense, lazy } from "react";
 import { useRoutes } from "react-router-dom";
-import Layout from "../layout";
-import { Spinner } from "../components/spinner";
 
 // Lazy load pages
 const Home = lazy(() => import("../pages/home"));
-const Configuration = lazy(() => import("../pages/configuration"));
+const Settings = lazy(() => import("../pages/settings"));
 
 /**
  * Route configuration
- * Follows DRY principle by centralizing route definitions
  */
 const routes = [
   {
@@ -25,10 +24,10 @@ const routes = [
         ),
       },
       {
-        path: "configuration",
+        path: "settings",
         element: (
           <Suspense fallback={<Spinner />}>
-            <Configuration />
+            <Settings />
           </Suspense>
         ),
       },
