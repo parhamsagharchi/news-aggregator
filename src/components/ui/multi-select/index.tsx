@@ -91,24 +91,32 @@ function MultiSelect(props: IMultiSelectProps) {
                         {option.label}
                       </span>
                       {!isDisabled && (
-                        <button
-                          type="button"
+                        <span
+                          role="button"
+                          tabIndex={0}
                           onClick={(e) => removeValue(option.value, e)}
-                          className="hover:bg-primary/20 rounded-full p-0.5 transition-colors flex-shrink-0"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              removeValue(option.value, e as any);
+                            }
+                          }}
+                          className="hover:bg-primary/20 rounded-full p-0.5 transition-colors flex-shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
                         >
                           <X className="h-3 w-3" />
-                        </button>
+                        </span>
                       )}
                     </span>
                   ))}
                   {remainingCount > 0 && (
                     <Popover className="relative flex-shrink-0">
-                      {() => (
+                      {({ open: isPopoverOpen }) => (
                         <>
                           <Popover.Button
+                            as="span"
                             className={clsx(
                               "inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-xs font-medium",
-                              "hover:bg-primary/20 transition-colors",
+                              "hover:bg-primary/20 transition-colors cursor-pointer",
                               "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
                             )}
                             onClick={(e) => {
@@ -143,16 +151,24 @@ function MultiSelect(props: IMultiSelectProps) {
                                           {option.label}
                                         </span>
                                         {!isDisabled && (
-                                          <button
-                                            type="button"
+                                          <span
+                                            role="button"
+                                            tabIndex={0}
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               removeValue(option.value, e);
                                             }}
-                                            className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                                            onKeyDown={(e) => {
+                                              if (e.key === "Enter" || e.key === " ") {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                removeValue(option.value, e as any);
+                                              }
+                                            }}
+                                            className="hover:bg-primary/20 rounded-full p-0.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
                                           >
                                             <X className="h-3 w-3" />
-                                          </button>
+                                          </span>
                                         )}
                                       </span>
                                     ))}
