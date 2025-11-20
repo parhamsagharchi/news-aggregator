@@ -1,20 +1,12 @@
 import { useMemo } from "react";
-import { useGetNewsApiArticles } from "@/http-core/services/newsapi";
-import { useGetGuardianArticle } from "@/http-core/services/guardian";
-import { useGetNytArticles } from "@/http-core/services/nyt";
-import type { IGetNewsApiResponse } from "@/http-core/services/newsapi/newsapi.types";
-import type { IGetGuardianResponse } from "@/http-core/services/guardian/guardian.types";
-import type { IGetNytResponse } from "@/http-core/services/nyt/nyt.types";
-import {
-  normalizeNewsApiArticle,
-  normalizeGuardianArticle,
-  normalizeNytArticle,
-} from "@/utils/article-normalizer";
 import { filterArticles } from "@/utils/article-filter";
 import { shouldFetchSource } from "@/utils/filter";
 import type { IArticle } from "@/types/article.types";
 import { ENewsSource } from "@/store/store.enum";
 import { useAdvanceFilterStore } from "@/store/store.hooks";
+import { useNewsApiArticles } from "./use-news-api-articles";
+import { useGuardianArticles } from "./use-guardian-articles";
+import { useNytArticles } from "./use-nyt-articles";
 
 interface UseNewsArticlesParams {
   pageSize?: number;
@@ -32,42 +24,6 @@ interface UseNewsArticlesResult {
   guardianCount: number;
   nytCount: number;
 }
-
-/**
- * Extract and normalize articles from NewsAPI pages
- */
-const extractNewsApiArticles = (
-  data: { pages: IGetNewsApiResponse[] } | undefined
-): IArticle[] => {
-  if (!data?.pages) return [];
-  return data.pages.flatMap(
-    (page) => page.articles?.map(normalizeNewsApiArticle) ?? []
-  );
-};
-
-/**
- * Extract and normalize articles from Guardian pages
- */
-const extractGuardianArticles = (
-  data: { pages: IGetGuardianResponse[] } | undefined
-): IArticle[] => {
-  if (!data?.pages) return [];
-  return data.pages.flatMap(
-    (page) => page.response?.results?.map(normalizeGuardianArticle) ?? []
-  );
-};
-
-/**
- * Extract and normalize articles from NYT pages
- */
-const extractNytArticles = (
-  data: { pages: IGetNytResponse[] } | undefined
-): IArticle[] => {
-  if (!data?.pages) return [];
-  return data.pages.flatMap(
-    (page) => page.response?.docs?.map(normalizeNytArticle) ?? []
-  );
-};
 
 /**
  * Count articles by source
@@ -89,20 +45,6 @@ export const useNewsArticles = ({
   const { keyword, category, sources, author, startDate, endDate } =
     filterState;
 
-  const nytFqQuery = useMemo(() => {
-    if (category.length === 0) return undefined;
-    if (category.length === 1) {
-      return `news_desk:("${category[0]}")`;
-    }
-    const categories = category.map((cat) => `"${cat}"`).join(" OR ");
-    return `news_desk:(${categories})`;
-  }, [category]);
-
-  const guardianSection = useMemo(() => {
-    if (category.length === 0) return undefined;
-    return category.join("|");
-  }, [category]);
-
   const shouldFetchFlags = useMemo(
     () => ({
       newsAPI: shouldFetchSource(sources, ENewsSource.NewsAPI),
@@ -112,128 +54,96 @@ export const useNewsArticles = ({
     [sources]
   );
 
-  const newsApiQueryValue = useMemo(() => keyword.trim() || "news", [keyword]);
+  // Use individual hooks for each API
+  const newsApiResult = useNewsApiArticles({
+    keyword,
+    pageSize,
+    startDate,
+    endDate,
+    enabled: shouldFetchFlags.newsAPI,
+  });
 
-  const newsApiQuery = useGetNewsApiArticles(
-    {
-      q: newsApiQueryValue,
-      pageSize,
-      from: startDate || undefined,
-      to: endDate || undefined,
-    },
-    {
-      enabled: shouldFetchFlags.newsAPI && newsApiQueryValue.length > 0,
-    }
-  );
+  const guardianResult = useGuardianArticles({
+    keyword,
+    category,
+    pageSize,
+    startDate,
+    endDate,
+    enabled: shouldFetchFlags.guardian,
+  });
 
-  const guardianQuery = useGetGuardianArticle(
-    {
-      q: keyword || undefined,
-      pageSize,
-      section: guardianSection,
-      fromDate: startDate || undefined,
-      toDate: endDate || undefined,
-    },
-    {
-      enabled: shouldFetchFlags.guardian,
-    }
-  );
+  const nytResult = useNytArticles({
+    keyword,
+    category,
+    startDate,
+    endDate,
+    enabled: shouldFetchFlags.nyt,
+  });
 
-  const nytQuery = useGetNytArticles(
-    {
-      q: keyword || undefined,
-      fq: nytFqQuery,
-      begin_date: startDate ? startDate.replace(/-/g, "") : undefined,
-      end_date: endDate ? endDate.replace(/-/g, "") : undefined,
-    },
-    {
-      enabled: shouldFetchFlags.nyt,
-    }
-  );
-
+  // Combine all articles and apply filters
   const articles = useMemo(() => {
-    const allArticles: IArticle[] = [];
-
-    if (shouldFetchFlags.newsAPI) {
-      allArticles.push(
-        ...extractNewsApiArticles(
-          newsApiQuery.data as { pages: IGetNewsApiResponse[] } | undefined
-        )
-      );
-    }
-
-    if (shouldFetchFlags.guardian) {
-      allArticles.push(
-        ...extractGuardianArticles(
-          guardianQuery.data as { pages: IGetGuardianResponse[] } | undefined
-        )
-      );
-    }
-
-    if (shouldFetchFlags.nyt) {
-      allArticles.push(
-        ...extractNytArticles(
-          nytQuery.data as { pages: IGetNytResponse[] } | undefined
-        )
-      );
-    }
+    const allArticles: IArticle[] = [
+      ...newsApiResult.articles,
+      ...guardianResult.articles,
+      ...nytResult.articles,
+    ];
 
     return filterArticles(allArticles, keyword, startDate, endDate, author);
   }, [
-    newsApiQuery.data,
-    guardianQuery.data,
-    nytQuery.data,
+    newsApiResult.articles,
+    guardianResult.articles,
+    nytResult.articles,
     keyword,
     startDate,
     endDate,
     author,
-    shouldFetchFlags,
   ]);
 
   const sourceCounts = useMemo(() => countBySource(articles), [articles]);
 
   const isLoading =
-    newsApiQuery.isLoading || guardianQuery.isLoading || nytQuery.isLoading;
+    newsApiResult.isLoading || guardianResult.isLoading || nytResult.isLoading;
 
   const isFetchingNextPage =
-    newsApiQuery.isFetchingNextPage ||
-    guardianQuery.isFetchingNextPage ||
-    nytQuery.isFetchingNextPage;
+    newsApiResult.isFetchingNextPage ||
+    guardianResult.isFetchingNextPage ||
+    nytResult.isFetchingNextPage;
 
   const hasNextPage =
-    (newsApiQuery.hasNextPage && shouldFetchFlags.newsAPI) ||
-    (guardianQuery.hasNextPage && shouldFetchFlags.guardian) ||
-    (nytQuery.hasNextPage && shouldFetchFlags.nyt);
+    (newsApiResult.hasNextPage && shouldFetchFlags.newsAPI) ||
+    (guardianResult.hasNextPage && shouldFetchFlags.guardian) ||
+    (nytResult.hasNextPage && shouldFetchFlags.nyt);
 
   const isRefetching =
-    (newsApiQuery.isFetching &&
-      !newsApiQuery.isLoading &&
+    (newsApiResult.isFetching &&
+      !newsApiResult.isLoading &&
       shouldFetchFlags.newsAPI) ||
-    (guardianQuery.isFetching &&
-      !guardianQuery.isLoading &&
+    (guardianResult.isFetching &&
+      !guardianResult.isLoading &&
       shouldFetchFlags.guardian) ||
-    (nytQuery.isFetching && !nytQuery.isLoading && shouldFetchFlags.nyt);
+    (nytResult.isFetching && !nytResult.isLoading && shouldFetchFlags.nyt);
 
   const errors = useMemo(() => {
     const errorList: Array<{ source: string; message: string }> = [];
-    if (newsApiQuery.error)
+    if (newsApiResult.error)
       errorList.push({ source: "NewsAPI", message: "Failed to load articles" });
-    if (guardianQuery.error)
+    if (guardianResult.error)
       errorList.push({
         source: "Guardian",
         message: "Failed to load articles",
       });
-    if (nytQuery.error)
+    if (nytResult.error)
       errorList.push({ source: "NYT", message: "Failed to load articles" });
     return errorList;
-  }, [newsApiQuery.error, guardianQuery.error, nytQuery.error]);
+  }, [newsApiResult.error, guardianResult.error, nytResult.error]);
 
   const fetchNextPage = () => {
-    if (shouldFetchFlags.newsAPI && newsApiQuery.hasNextPage)
-      newsApiQuery.fetchNextPage();
-    if (shouldFetchFlags.guardian && guardianQuery.hasNextPage)
-      guardianQuery.fetchNextPage();
-    if (shouldFetchFlags.nyt && nytQuery.hasNextPage) nytQuery.fetchNextPage();
+    if (shouldFetchFlags.newsAPI && newsApiResult.hasNextPage)
+      newsApiResult.fetchNextPage();
+    if (shouldFetchFlags.guardian && guardianResult.hasNextPage)
+      guardianResult.fetchNextPage();
+    if (shouldFetchFlags.nyt && nytResult.hasNextPage)
+      nytResult.fetchNextPage();
   };
 
   return {
